@@ -170,7 +170,7 @@ ${COLOR_TRAITS}
 6. ענה בצורה ממוקדת, פרקטית, בגובה העיניים (תכלס). השתמש ב-Markdown, שמור על תשובות קצרות והימנע מהקדמות מריחות.`;
 
     const response = await callGeminiApi('generateContent', {
-      model: "gemini-2.0-flash",
+      model: "gemini-3.6-flash",
       contents: userInput,
       config: {
         systemInstruction,
@@ -206,7 +206,7 @@ ${COLOR_TRAITS}
 6. ענה בצורה ממוקדת, פרקטית, בגובה העיניים (תכלס). השתמש ב-Markdown, שמור על תשובות קצרות והימנע מהקדמות מריחות.`;
 
   return callGeminiApiStream('generateContent', {
-    model: "gemini-2.0-flash",
+    model: "gemini-3.6-flash",
     contents: userInput,
     config: {
       systemInstruction,
@@ -270,7 +270,7 @@ ${missingStr}
 3. 3 המלצות פרקטיות ומידיות לשיפור המצב המתאימות ספציפית לצבעים השונים בצוות.`;
 
     const response = await callGeminiApi('generateContent', {
-      model: "gemini-2.0-flash",
+      model: "gemini-3.6-flash",
       contents: challenge,
       config: {
         systemInstruction,
@@ -337,7 +337,7 @@ ${missingStr}
 3. 3 המלצות פרקטיות ומידיות לשיפור המצב המתאימות ספציפית לצבעים השונים בצוות.`;
 
   return callGeminiApiStream('generateContent', {
-    model: "gemini-2.0-flash",
+    model: "gemini-3.6-flash",
     contents: challenge,
     config: {
       systemInstruction,
@@ -519,7 +519,7 @@ ${positionContext[relationship] || ''}
     const prompt = `היסטוריית השיחה העדכנית:\n${conversationLog}\n\nהמשתמש אומר עכשיו:\n${userInput}\n\nהגב מתוך הדמות בצורה אנושית ומציאותית (משפט-שניים):`;
 
     const response = await callGeminiApi('generateContent', {
-      model: "gemini-2.0-flash",
+      model: "gemini-3.6-flash",
       contents: prompt,
       config: {
         systemInstruction,
@@ -592,7 +592,7 @@ ${targetRules}
 2. תכלס: שכתוב מחדש של אחד המשפטים הפחות טובים מהשיחה למשפט מנצח באותו הקשר שמנטרל את ההתנגדות בצורה נכונה].`;
 
     const response = await callGeminiApi('generateContent', {
-      model: "gemini-2.0-flash",
+      model: "gemini-3.6-flash",
       contents: `אנא בצע ניתוח מעמיק ומקצועי של היסטוריית השיחה הבאה:\n\n${conversationLog}`,
       config: {
         systemInstruction,
@@ -636,7 +636,7 @@ ${colorProfile}
 4. שכתוב מומלץ: הצע פרומפט מיטבי עבור המשימה המותאם לאופן החשיבה של הצבע ${mainColor}.`;
 
     const response = await callGeminiApi('generateContent', {
-      model: "gemini-2.0-flash",
+      model: "gemini-3.6-flash",
       contents: "אנא נתח את הפרומפט המצויין.",
       config: {
         systemInstruction,
@@ -656,7 +656,7 @@ ${colorProfile}
 export const transcribeAudio = async (audioBase64: string, mimeType: string): Promise<string> => {
   try {
     const response = await callGeminiApi('generateContent', {
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3.6-flash',
       contents: [
         {
           role: 'user',
@@ -679,7 +679,7 @@ export const transcribeAudio = async (audioBase64: string, mimeType: string): Pr
 export async function translateText(text: string, targetLanguage: string): Promise<string> {
   try {
     const response = await callGeminiApi('generateContent', {
-      model: "gemini-2.0-flash",
+      model: "gemini-3.6-flash",
       contents: text,
       config: {
         systemInstruction: `You are a professional translator. Translate the following text into ${targetLanguage}.`,
@@ -717,7 +717,7 @@ ${colorProfile}
 3. 3 המלצות "תכלס" לפעולה מיידית כדי לחלץ אותו מהמצב.`;
 
   return callGeminiApiStream('generateContent', {
-    model: "gemini-2.0-flash",
+    model: "gemini-3.6-flash",
     contents: [{ role: 'user', parts: [{ text: situation }] }],
     config: {
       systemInstruction,

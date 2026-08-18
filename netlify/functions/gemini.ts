@@ -254,7 +254,7 @@ if (groqModel === "deepseek-r1-distill-llama-70b") {
     }
 
     const ai = new GoogleGenAI({ apiKey: geminiApiKey });
-    const modelName = payload.model || "gemini-2.0-flash";
+    const modelName = payload.model || "gemini-3.6-flash";
 
     // Helper for streaming
     if (action.endsWith('Stream')) {
