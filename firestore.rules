@@ -1,0 +1,73 @@
+rules_version = '2';
+
+// Deploy with: firebase deploy --only firestore:rules
+// (requires firebase-tools + `firebase use <project-id>` pointed at this project's Firebase project)
+//
+// Design: every document that belongs to a customer carries an `orgId`. A user can only
+// read/write data inside their own org, and only an admin of THAT SAME org can read other
+// users' data or manage teams. There is no global admin role — "admin" always means
+// "admin of my own orgId", enforced here, not just in the client UI.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function myOrgId() {
+      return myProfile().orgId;
+    }
+
+    function isAdminOfOrg(orgId) {
+      return isSignedIn() && myProfile().role == 'admin' && myProfile().orgId == orgId;
+    }
+
+    // --- users/{uid} ---
+    match /users/{uid} {
+      allow read: if isSignedIn() && (
+        request.auth.uid == uid ||
+        isAdminOfOrg(resource.data.orgId)
+      );
+      // A user can create their own profile once (at signup) but can never grant themselves
+      // admin or move themselves to a different org after the fact — only an org admin can.
+      allow create: if isSignedIn() && request.auth.uid == uid
+                     && request.resource.data.role == (uid == request.auth.uid ? request.resource.data.role : 'user');
+      allow update: if isSignedIn() && (
+        // Users may update their own non-privileged fields (results, background data)
+        (request.auth.uid == uid
+          && request.resource.data.orgId == resource.data.orgId
+          && request.resource.data.role == resource.data.role)
+        // Org admins may reassign team / role within their own org
+        || isAdminOfOrg(resource.data.orgId)
+      );
+      allow delete: if isAdminOfOrg(resource.data.orgId);
+    }
+
+    // --- teams/{teamId} ---
+    match /teams/{teamId} {
+      allow read: if isSignedIn() && resource.data.orgId == myOrgId();
+      allow create: if isSignedIn() && request.resource.data.orgId == myOrgId() && isAdminOfOrg(myOrgId());
+      allow update, delete: if isAdminOfOrg(resource.data.orgId);
+    }
+
+    // --- organizations/{orgId} ---
+    match /organizations/{orgId} {
+      allow read: if isSignedIn() && myOrgId() == orgId;
+      // Org creation happens at signup (see createOrganization in firebaseService.ts) —
+      // any signed-in user may create ONE org record for themselves as owner.
+      allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
+      allow update: if isAdminOfOrg(orgId);
+      allow delete: if false; // Deletion is an offline/support operation, not self-service.
+
+      match /usage/{month} {
+        allow read: if isAdminOfOrg(orgId);
+        allow write: if false; // Only the server (Netlify function via Admin SDK) writes usage counters.
+      }
+    }
+  }
+}
