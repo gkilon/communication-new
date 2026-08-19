@@ -1,7 +1,7 @@
 (function () {
   const PROCESSED_ATTR = 'data-kilon-processed';
   let panel = null;
-  let colleaguesCache = null;
+  let contextCache = null; // { writer: {scores, displayName}, colleagues: [...] }
   let activeComposeBox = null;
 
   function findComposeBoxes() {
@@ -72,14 +72,14 @@
 
   function loadColleagues() {
     const select = panel.querySelector('.kilon-recipient-select');
-    if (colleaguesCache) {
-      populateSelect(select, colleaguesCache);
+    if (contextCache) {
+      populateSelect(select, contextCache.colleagues);
       return;
     }
     chrome.runtime.sendMessage({ type: 'GET_COLLEAGUES' }, (res) => {
       if (res?.ok) {
-        colleaguesCache = res.colleagues;
-        populateSelect(select, colleaguesCache);
+        contextCache = { writer: res.writer, colleagues: res.colleagues };
+        populateSelect(select, contextCache.colleagues);
       } else if (res?.error === 'NOT_LOGGED_IN') {
         panel.querySelector('.kilon-result').innerHTML =
           '<p class="kilon-error">יש להתחבר קודם דרך אייקון התוסף בסרגל הכלים.</p>';
@@ -108,10 +108,17 @@
     }
 
     const recipientUid = panel.querySelector('.kilon-recipient-select').value;
+    const recipient = contextCache?.colleagues.find(c => c.uid === recipientUid);
     resultEl.innerHTML = '<p class="kilon-loading">בודק...</p>';
 
     chrome.runtime.sendMessage(
-      { type: 'CHECK_EMAIL_STYLE', draftText, recipientUid },
+      {
+        type: 'CHECK_EMAIL_STYLE',
+        draftText,
+        writerScores: contextCache?.writer?.scores,
+        recipientScores: recipient?.scores || null,
+        recipientName: recipient?.displayName
+      },
       (res) => {
         if (res?.ok) {
           renderFeedback(resultEl, res.feedback);

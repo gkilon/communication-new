@@ -71,19 +71,13 @@ async function fetchContext(idToken) {
   return data; // { writer: {scores, displayName}, colleagues: [...] }
 }
 
-async function checkEmailStyle(draftText, recipientUid) {
+async function checkEmailStyle(draftText, writerScores, recipientScores, recipientName) {
   const idToken = await getValidIdToken();
   if (!idToken) throw new Error("NOT_LOGGED_IN");
 
-  const context = await fetchContext(idToken);
-  if (!context.writer?.scores) throw new Error("לא נמצא פרופיל תקשורת — יש להשלים קודם את השאלון באתר.");
+  if (!writerScores) throw new Error("לא נמצא פרופיל תקשורת — יש להשלים קודם את השאלון באתר.");
 
-  const recipient = context.colleagues.find(c => c.uid === recipientUid);
-  const systemInstruction = buildEmailFeedbackPrompt(
-    context.writer.scores,
-    recipient?.scores || null,
-    recipient?.displayName
-  );
+  const systemInstruction = buildEmailFeedbackPrompt(writerScores, recipientScores || null, recipientName);
 
   const res = await fetch(`${CONFIG.SITE_URL}/api/gemini`, {
     method: "POST",
@@ -150,11 +144,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           const idToken = await getValidIdToken();
           if (!idToken) { sendResponse({ ok: false, error: "NOT_LOGGED_IN" }); break; }
           const context = await fetchContext(idToken);
-          sendResponse({ ok: true, colleagues: context.colleagues });
+          sendResponse({ ok: true, writer: context.writer, colleagues: context.colleagues });
           break;
         }
         case "CHECK_EMAIL_STYLE": {
-          const feedback = await checkEmailStyle(msg.draftText, msg.recipientUid);
+          const feedback = await checkEmailStyle(msg.draftText, msg.writerScores, msg.recipientScores, msg.recipientName);
           sendResponse({ ok: true, feedback });
           break;
         }
