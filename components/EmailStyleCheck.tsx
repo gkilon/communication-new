@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Scores } from '../types';
 import { auth } from '../firebaseConfig';
 import { getUserProfile, getOrgUsers } from '../services/firebaseService';
-import { getEmailStyleFeedback } from '../services/geminiService';
+import { getEmailStyleFeedback, EmailFeedbackResult } from '../services/geminiService';
 
 interface EmailStyleCheckProps {
   writerScores: Scores;
@@ -20,7 +20,8 @@ export const EmailStyleCheck: React.FC<EmailStyleCheckProps> = ({ writerScores }
   const [colleagues, setColleagues] = useState<Colleague[]>([]);
   const [selectedUid, setSelectedUid] = useState<string>(''); // '' = unknown/general
   const [loadingColleagues, setLoadingColleagues] = useState(true);
-  const [feedback, setFeedback] = useState<string>('');
+  const [feedback, setFeedback] = useState<EmailFeedbackResult | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -49,7 +50,7 @@ export const EmailStyleCheck: React.FC<EmailStyleCheckProps> = ({ writerScores }
     if (!draft.trim()) return;
     setIsLoading(true);
     setError('');
-    setFeedback('');
+    setFeedback(null);
     try {
       const recipient = colleagues.find(c => c.uid === selectedUid);
       const result = await getEmailStyleFeedback(
@@ -66,11 +67,18 @@ export const EmailStyleCheck: React.FC<EmailStyleCheckProps> = ({ writerScores }
     }
   };
 
+  const handleCopy = (text: string, idx: number) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedIndex(idx);
+      setTimeout(() => setCopiedIndex(null), 1500);
+    });
+  };
+
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-6 space-y-6" dir="rtl">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-black text-white">בדיקת מייל לפני שליחה</h2>
-        <p className="text-gray-400 text-sm">הדבק/י את טיוטת המייל, ותקבל/י משוב מותאם לסגנון התקשורת שלך — ושל הנמען, אם ידוע.</p>
+        <p className="text-gray-400 text-sm">הדבק/י את טיוטת המייל, ותקבל/י תובנה קצרה + ניסוחים חלופיים מוכנים להעתקה, מותאמים לסגנון שלך — ושל הנמען, אם ידוע.</p>
       </div>
 
       <div className="bg-gray-800 rounded-2xl border border-gray-700 p-5 space-y-4">
@@ -119,8 +127,29 @@ export const EmailStyleCheck: React.FC<EmailStyleCheckProps> = ({ writerScores }
       </div>
 
       {feedback && (
-        <div className="bg-gray-800 rounded-2xl border border-cyan-500/30 p-6 whitespace-pre-wrap text-gray-200 leading-relaxed">
-          {feedback}
+        <div className="bg-gray-800 rounded-2xl border border-cyan-500/30 p-6 space-y-4">
+          <p className="text-cyan-300 font-bold">{feedback.insight}</p>
+
+          {feedback.originalSentence && (
+            <p className="text-gray-500 text-sm italic">במקום: "{feedback.originalSentence}"</p>
+          )}
+
+          <div className="space-y-2">
+            {feedback.alternatives.map((alt, idx) => (
+              <div key={idx} className="flex items-center gap-3 bg-gray-900 rounded-xl p-3">
+                <span className="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full whitespace-nowrap">
+                  {alt.label}
+                </span>
+                <span className="flex-1 text-gray-200 text-sm">{alt.text}</span>
+                <button
+                  onClick={() => handleCopy(alt.text, idx)}
+                  className="text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg whitespace-nowrap"
+                >
+                  {copiedIndex === idx ? 'הועתק! ✓' : 'העתק'}
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

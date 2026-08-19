@@ -98,8 +98,9 @@ async function checkEmailStyle(draftText, recipientUid) {
         contents: `הטיוטה לבדיקה:\n\n${draftText}`,
         config: {
           systemInstruction,
-          temperature: 0.6,
+          temperature: 0.5,
           thinkingConfig: { thinkingLevel: "low" },
+          responseMimeType: "application/json",
           safetySettings: [
             { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
             { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -113,7 +114,17 @@ async function checkEmailStyle(draftText, recipientUid) {
 
   const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error || `שגיאה (${res.status})`);
-  return data.text || "לא התקבלה תשובה.";
+
+  let parsed;
+  try {
+    parsed = JSON.parse(data.text);
+  } catch (e) {
+    throw new Error("המודל החזיר תשובה שלא בפורמט הצפוי. נסה/י שוב.");
+  }
+  if (!parsed.insight || !Array.isArray(parsed.alternatives)) {
+    throw new Error("תשובת המודל חסרה שדות נדרשים. נסה/י שוב.");
+  }
+  return parsed; // { insight, originalSentence, alternatives: [{label, text}] }
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

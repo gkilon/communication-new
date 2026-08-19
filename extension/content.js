@@ -114,7 +114,7 @@
       { type: 'CHECK_EMAIL_STYLE', draftText, recipientUid },
       (res) => {
         if (res?.ok) {
-          resultEl.innerText = res.feedback;
+          renderFeedback(resultEl, res.feedback);
         } else if (res?.error === 'NOT_LOGGED_IN') {
           resultEl.innerHTML = '<p class="kilon-error">יש להתחבר קודם דרך אייקון התוסף בסרגל הכלים.</p>';
         } else {
@@ -122,6 +122,51 @@
         }
       }
     );
+  }
+
+  function renderFeedback(resultEl, feedback) {
+    resultEl.innerHTML = '';
+
+    const insightEl = document.createElement('p');
+    insightEl.className = 'kilon-insight';
+    insightEl.textContent = feedback.insight;
+    resultEl.appendChild(insightEl);
+
+    if (feedback.originalSentence) {
+      const origEl = document.createElement('p');
+      origEl.className = 'kilon-original';
+      origEl.textContent = `במקום: "${feedback.originalSentence}"`;
+      resultEl.appendChild(origEl);
+    }
+
+    (feedback.alternatives || []).forEach(alt => {
+      const row = document.createElement('div');
+      row.className = 'kilon-alt-row';
+
+      const labelEl = document.createElement('span');
+      labelEl.className = 'kilon-alt-label';
+      labelEl.textContent = alt.label;
+
+      const textEl = document.createElement('span');
+      textEl.className = 'kilon-alt-text';
+      textEl.textContent = alt.text;
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'kilon-copy-btn';
+      copyBtn.type = 'button';
+      copyBtn.textContent = 'העתק';
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(alt.text).then(() => {
+          copyBtn.textContent = 'הועתק! ✓';
+          setTimeout(() => { copyBtn.textContent = 'העתק'; }, 1500);
+        });
+      });
+
+      row.appendChild(labelEl);
+      row.appendChild(textEl);
+      row.appendChild(copyBtn);
+      resultEl.appendChild(row);
+    });
   }
 
   // Gmail is a single-page app that mounts compose windows dynamically —

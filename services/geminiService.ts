@@ -218,19 +218,29 @@ ${COLOR_TRAITS}
   }, onChunk);
 };
 
+export interface EmailFeedbackAlternative {
+  label: string;
+  text: string;
+}
+
+export interface EmailFeedbackResult {
+  insight: string;
+  originalSentence?: string;
+  alternatives: EmailFeedbackAlternative[];
+}
+
 export const getEmailStyleFeedback = async (
   writerScores: Scores,
   draftText: string,
   recipientScores?: Scores | null,
   recipientName?: string
-): Promise<string> => {
-  try {
-    const writerProfile = buildColorProfile(writerScores);
-    const recipientProfile = recipientScores
-      ? `\nפרופיל התקשורת של הנמען (${recipientName || 'הנמען'}):\n${buildColorProfile(recipientScores)}`
-      : `\nפרופיל התקשורת של הנמען אינו ידוע — תן משוב כללי המבוסס רק על סגנון הכותב, וציין בקצרה שמשוב מדויק יותר אפשרי אם יודעים את סגנון הנמען.`;
+): Promise<EmailFeedbackResult> => {
+  const writerProfile = buildColorProfile(writerScores);
+  const recipientProfile = recipientScores
+    ? `\nפרופיל התקשורת של הנמען (${recipientName || 'הנמען'}):\n${buildColorProfile(recipientScores)}`
+    : `\nפרופיל התקשורת של הנמען אינו ידוע — תן משוב כללי המבוסס רק על סגנון הכותב.`;
 
-    const systemInstruction = `אתה יועץ תקשורת בכיר מבית Kilon Consulting, שנותן משוב ממוקד וקצר על טיוטת מייל לפני שליחתה.
+  const systemInstruction = `אתה יועץ תקשורת בכיר מבית Kilon Consulting. אתה נותן משוב מהיר וממוקד על טיוטת מייל, מותאם לחוזקות ולנקודות העיוורון הספציפיות של הכותב/ת (ושל הנמען, אם ידוע) — לא משוב גנרי.
 
 פרופיל התקשורת של הכותב/ת:
 ${writerProfile}
@@ -238,34 +248,35 @@ ${recipientProfile}
 
 ${COLOR_TRAITS}
 
-המשימה שלך: לתת משוב שמעצים את החוזקות של הכותב/ת הספציפי/ת וממתן את נקודות העיוורון שלה/ו — לא משוב גנרי שהיה מתאים לכל אחד.
+המשימה שלך:
+1. זהה משפט או ביטוי אחד בטיוטה שהוא נקודת החיכוך/ההזדמנות הכי משמעותית.
+2. כתוב תובנה אחת קצרה (משפט אחד, לא יותר) שמסבירה למה זו נקודת החיכוך — קשורה ספציפית לצבע הדומיננטי של הכותב/ת ולא גנרית.
+3. כתוב 3 ניסוחים חלופיים קצרים למשפט/לביטוי הזה בלבד (לא לכל המייל) — חלופות קצרות שממש אפשר להדביק במקום המקורי. תן לכל חלופה תווית קצרה שמתארת את הכיוון שלה, מותאמת לפרופיל הספציפי.
 
-איך לעשות את זה בפועל:
-1. זהה בטיוטה עצמה איפה באים לידי ביטוי הצבע/ים הדומיננטיים של הכותב/ת (למשל: ישירות ותכל'ס אצל אדום, חום ואופטימיות אצל צהוב, הימנעות מעימות אצל ירוק, דיוק ופירוט אצל כחול).
-2. ציין במפורש איפה החוזקה הזו עובדת טוב בטיוטה הזו וכדאי לשמר אותה — לא "אתה תקשורתי טוב" באופן כללי, אלא הצבע/משפט הספציפי בטיוטה שמדגים את זה.
-3. זהה איפה נקודת העיוורון של הפרופיל הזה (לפי הצבע הדומיננטי) עלולה לפגוע דווקא במייל הזה — ותן דרך קונקרטית למתן אותה מבלי לוותר על החוזקה. למשל: אם הכותב/ת דומיננטי/ת באדום וכתב/ה מייל ישיר מדי שעלול להיתפס תוקפני — אל תמליץ לוותר על הישירות, אלא הצע ניסוח שממתן את הטון אך שומר על הבהירות והתכל'סיות.
-4. אם ידוע פרופיל הנמען — ציין נקודת חיכוך ספציפית בין שני הפרופילים (לא רק "יכול להיות פער"), ותן דרך לגשר עליה שמתחשבת בשני הצדדים.
-5. עד 3 המלצות, פרקטיות וממוקדות. הצע ניסוח חלופי לקטע אחד בעייתי — לא לשכתב את כל המייל.
-6. אסור משפט גנרי שמתאים לכל טיוטה בכל פרופיל. כל משפט חייב לנבוע ספציפית מהצבעים ומהטקסט שנשלח.
-7. ענה בעברית, בגובה העיניים, בפורמט קצר וממוקד עם Markdown. אל תפתח בהקדמות.`;
+חשוב מאוד על הפורמט: החזר אך ורק אובייקט JSON תקין, בדיוק במבנה הבא, ללא שום טקסט נוסף לפניו או אחריו, וללא code fences של Markdown:
 
-    const response = await callGeminiApi('generateContent', {
-      model: "gemini-3.6-flash",
-      contents: `הטיוטה לבדיקה:\n\n${draftText}`,
-      config: {
-        systemInstruction,
-        temperature: 0.6,
-        thinkingConfig: { thinkingLevel: "low" },
-        safetySettings: SAFETY_SETTINGS
-      }
-    });
+{"insight": "משפט תובנה אחד קצר", "originalSentence": "המשפט/הביטוי המדויק מתוך הטיוטה (verbatim, אם אין ביטוי בעייתי ברור השאר ריק)", "alternatives": [{"label": "תווית קצרה", "text": "ניסוח חלופי קצר"}, {"label": "תווית קצרה", "text": "ניסוח חלופי קצר"}, {"label": "תווית קצרה", "text": "ניסוח חלופי קצר"}]}
 
-    const data = await response.json();
-    return data.text || "לא התקבלה תשובה.";
-  } catch (error: any) {
-    console.error("Email Style Feedback Error:", error);
-    return `שגיאה: ${error.message}`;
+כל הטקסט בעברית.`;
+
+  const response = await callGeminiApi('generateContent', {
+    model: "gemini-3.6-flash",
+    contents: `הטיוטה לבדיקה:\n\n${draftText}`,
+    config: {
+      systemInstruction,
+      temperature: 0.5,
+      thinkingConfig: { thinkingLevel: "low" },
+      responseMimeType: "application/json",
+      safetySettings: SAFETY_SETTINGS
+    }
+  });
+
+  const data = await response.json();
+  const parsed = JSON.parse(data.text);
+  if (!parsed.insight || !Array.isArray(parsed.alternatives)) {
+    throw new Error("תשובת המודל חסרה שדות נדרשים");
   }
+  return parsed;
 };
 
 export const getTeamAiAdvice = async (users: UserProfile[], challenge: string): Promise<string> => {

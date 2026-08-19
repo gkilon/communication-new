@@ -105,3 +105,59 @@
 .kilon-loading {
   color: #9ca3af;
 }
+
+.kilon-insight {
+  font-weight: bold;
+  color: #67e8f9;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.kilon-original {
+  font-size: 12px;
+  color: #9ca3af;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.kilon-alt-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.kilon-alt-label {
+  font-size: 11px;
+  font-weight: bold;
+  color: #67e8f9;
+  background: rgba(103, 232, 249, 0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.kilon-alt-text {
+  flex: 1;
+  font-size: 13px;
+  color: #f3f4f6;
+}
+
+.kilon-copy-btn {
+  background: #0891b2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.kilon-copy-btn:hover {
+  background: #0e7490;
+}
