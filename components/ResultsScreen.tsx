@@ -6,6 +6,7 @@ import { CombinedAnalysis } from './CombinedAnalysis';
 import { generateProfileAnalysis } from '../services/analysisService';
 import { AiCoach } from './AiCoach';
 import { CaseStudiesSimulator } from './CaseStudiesSimulator';
+import { EmailStyleCheck } from './EmailStyleCheck';
 
 declare global {
   interface Window {
@@ -22,10 +23,11 @@ interface ResultsScreenProps {
   onLogout?: () => void;
 }
 
-type TabId = 'profile' | 'coach' | 'simulator';
+type TabId = 'profile' | 'coach' | 'simulator' | 'email-check';
 
 const TABS: { id: TabId; label: string; emoji: string }[] = [
   { id: 'profile', label: 'הפרופיל שלי', emoji: '🗺️' },
+  { id: 'email-check', label: 'בדיקת מייל', emoji: '✉️' },
   { id: 'coach', label: 'מאמן AI', emoji: '🤖' },
   { id: 'simulator', label: 'סימולטור שיחות', emoji: '🎭' },
 ];
@@ -232,6 +234,15 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ scores, background
                 </button>
               </div>
             )}
+          </motion.div>
+        )}
+
+        {/* ── Tab: Email Style Check ── */}
+        {activeTab === 'email-check' && (
+          <motion.div key="email-check" variants={tabVariants} initial="hidden" animate="visible" exit="exit" className="mt-4">
+            <div className="bg-glass-dark p-6 sm:p-8 rounded-[2rem] shadow-xl border border-glass-border backdrop-blur-xl">
+              <EmailStyleCheck writerScores={scores} />
+            </div>
           </motion.div>
         )}
 

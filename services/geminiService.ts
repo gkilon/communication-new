@@ -216,6 +216,52 @@ ${COLOR_TRAITS}
   }, onChunk);
 };
 
+export const getEmailStyleFeedback = async (
+  writerScores: Scores,
+  draftText: string,
+  recipientScores?: Scores | null,
+  recipientName?: string
+): Promise<string> => {
+  try {
+    const writerProfile = buildColorProfile(writerScores);
+    const recipientProfile = recipientScores
+      ? `\nפרופיל התקשורת של הנמען (${recipientName || 'הנמען'}):\n${buildColorProfile(recipientScores)}`
+      : `\nפרופיל התקשורת של הנמען אינו ידוע — תן משוב כללי המבוסס רק על סגנון הכותב, וציין בקצרה שמשוב מדויק יותר אפשרי אם יודעים את סגנון הנמען.`;
+
+    const systemInstruction = `אתה יועץ תקשורת בכיר מבית Kilon Consulting, שנותן משוב ממוקד וקצר על טיוטת מייל לפני שליחתה.
+
+פרופיל התקשורת של הכותב/ת:
+${writerProfile}
+${recipientProfile}
+
+${COLOR_TRAITS}
+
+המשימה שלך:
+1. קרא את הטיוטה שהמשתמש/ת שלח/ה.
+2. זהה נקודות חיכוך אפשריות בין סגנון הכתיבה לבין מה שיתקבל היטב אצל הנמען (אם ידוע), או אצל קהל כללי (אם לא).
+3. תן עד 3 המלצות פרקטיות וקצרות לשיפור הניסוח — לא הרצאה, לא ניתוח תיאורטי.
+4. אם משהו בטיוטה עובד טוב וכדאי לשמר, ציין את זה בקצרה.
+5. אם רלוונטי, הצע ניסוח חלופי לקטע בעייתי אחד (לא לשכתב את כל המייל).
+6. ענה בעברית, בגובה העיניים, בפורמט קצר וממוקד עם Markdown. אל תפתח בהקדמות.`;
+
+    const response = await callGeminiApi('generateContent', {
+      model: "gemini-3.6-flash",
+      contents: `הטיוטה לבדיקה:\n\n${draftText}`,
+      config: {
+        systemInstruction,
+        temperature: 0.6,
+        safetySettings: SAFETY_SETTINGS
+      }
+    });
+
+    const data = await response.json();
+    return data.text || "לא התקבלה תשובה.";
+  } catch (error: any) {
+    console.error("Email Style Feedback Error:", error);
+    return `שגיאה: ${error.message}`;
+  }
+};
+
 export const getTeamAiAdvice = async (users: UserProfile[], challenge: string): Promise<string> => {
   try {
     if (!challenge.trim()) return "נא להזין אתגר לניתוח.";
