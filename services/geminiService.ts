@@ -175,6 +175,7 @@ ${COLOR_TRAITS}
       config: {
         systemInstruction,
         temperature: 0.7,
+        thinkingConfig: { thinkingLevel: "low" },
         safetySettings: SAFETY_SETTINGS
       }
     });
@@ -211,6 +212,7 @@ ${COLOR_TRAITS}
     config: {
       systemInstruction,
       temperature: 0.7,
+      thinkingConfig: { thinkingLevel: "low" },
       safetySettings: SAFETY_SETTINGS
     }
   }, onChunk);
@@ -253,6 +255,7 @@ ${COLOR_TRAITS}
       config: {
         systemInstruction,
         temperature: 0.6,
+        thinkingConfig: { thinkingLevel: "low" },
         safetySettings: SAFETY_SETTINGS
       }
     });
@@ -324,6 +327,7 @@ ${missingStr}
       config: {
         systemInstruction,
         temperature: 0.7,
+        thinkingConfig: { thinkingLevel: "low" },
         safetySettings: SAFETY_SETTINGS
       }
     });
@@ -391,6 +395,7 @@ ${missingStr}
     config: {
       systemInstruction,
       temperature: 0.7,
+      thinkingConfig: { thinkingLevel: "low" },
       safetySettings: SAFETY_SETTINGS
     }
   }, onChunk);
@@ -573,6 +578,7 @@ ${positionContext[relationship] || ''}
       config: {
         systemInstruction,
         temperature: 0.7,
+        thinkingConfig: { thinkingLevel: "low" },
         safetySettings: SAFETY_SETTINGS
       }
     });
@@ -646,6 +652,7 @@ ${targetRules}
       config: {
         systemInstruction,
         temperature: 0.7,
+        thinkingConfig: { thinkingLevel: "low" },
         safetySettings: SAFETY_SETTINGS
       }
     });
@@ -690,6 +697,7 @@ ${colorProfile}
       config: {
         systemInstruction,
         temperature: 0.7,
+        thinkingConfig: { thinkingLevel: "low" },
         safetySettings: SAFETY_SETTINGS
       }
     });
@@ -733,6 +741,7 @@ export async function translateText(text: string, targetLanguage: string): Promi
       config: {
         systemInstruction: `You are a professional translator. Translate the following text into ${targetLanguage}.`,
         temperature: 0.3,
+        thinkingConfig: { thinkingLevel: "low" },
         safetySettings: SAFETY_SETTINGS
       }
     });
@@ -771,6 +780,7 @@ ${colorProfile}
     config: {
       systemInstruction,
       temperature: 0.7,
+      thinkingConfig: { thinkingLevel: "low" },
       safetySettings: SAFETY_SETTINGS
     }
   }, onChunk);
