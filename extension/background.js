@@ -51,11 +51,22 @@ async function getValidIdToken() {
   return stored.idToken;
 }
 
+async function safeJson(res) {
+  const raw = await res.text();
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    // Surface the real response instead of a bare "Unexpected token" — this is almost
+    // always an HTML error page or empty body from an upstream failure, not our JSON.
+    throw new Error(`Server returned non-JSON (status ${res.status}): ${raw.slice(0, 200)}`);
+  }
+}
+
 async function fetchContext(idToken) {
   const res = await fetch(`${CONFIG.SITE_URL}/api/get-context`, {
     headers: { "Authorization": `Bearer ${idToken}` }
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error || "שגיאה בטעינת פרופיל");
   return data; // { writer: {scores, displayName}, colleagues: [...] }
 }
@@ -100,7 +111,7 @@ async function checkEmailStyle(draftText, recipientUid) {
     })
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error || `שגיאה (${res.status})`);
   return data.text || "לא התקבלה תשובה.";
 }
