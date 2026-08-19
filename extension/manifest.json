@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "בדיקת מייל - Kilon Communication",
+  "version": "0.1.0",
+  "description": "משוב על סגנון תקשורת לפני שליחת מייל, מותאם לפרופיל שלך ושל הנמען",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://elegant-bombolone-70cbfe.netlify.app/*",
+    "https://identitytoolkit.googleapis.com/*",
+    "https://securetoken.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "בדיקת מייל - Kilon"
+  }
+}
