@@ -21,6 +21,7 @@ export const EmailStyleCheck: React.FC<EmailStyleCheckProps> = ({ writerScores }
   const [selectedUid, setSelectedUid] = useState<string>(''); // '' = unknown/general
   const [loadingColleagues, setLoadingColleagues] = useState(true);
   const [feedback, setFeedback] = useState<EmailFeedbackResult | null>(null);
+  const [showDepth, setShowDepth] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -51,6 +52,7 @@ export const EmailStyleCheck: React.FC<EmailStyleCheckProps> = ({ writerScores }
     setIsLoading(true);
     setError('');
     setFeedback(null);
+    setShowDepth(false);
     try {
       const recipient = colleagues.find(c => c.uid === selectedUid);
       const result = await getEmailStyleFeedback(
@@ -128,7 +130,24 @@ export const EmailStyleCheck: React.FC<EmailStyleCheckProps> = ({ writerScores }
 
       {feedback && (
         <div className="bg-gray-800 rounded-2xl border border-cyan-500/30 p-6 space-y-4">
-          <p className="text-cyan-300 font-bold">{feedback.insight}</p>
+          <div>
+            <p className="text-cyan-300 font-bold mb-1">{feedback.headline}</p>
+            {feedback.depth && (
+              <>
+                <button
+                  onClick={() => setShowDepth(!showDepth)}
+                  className="text-xs text-gray-400 hover:text-gray-200 underline"
+                >
+                  {showDepth ? 'הסתר ▴' : 'עוד פרטים ▾'}
+                </button>
+                {showDepth && (
+                  <p className="text-sm text-gray-300 leading-relaxed bg-gray-900 rounded-lg p-3 mt-2">
+                    {feedback.depth}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
 
           {feedback.originalSentence && (
             <p className="text-gray-500 text-sm italic">במקום: "{feedback.originalSentence}"</p>

@@ -134,10 +134,30 @@
   function renderFeedback(resultEl, feedback) {
     resultEl.innerHTML = '';
 
-    const insightEl = document.createElement('p');
-    insightEl.className = 'kilon-insight';
-    insightEl.textContent = feedback.insight;
-    resultEl.appendChild(insightEl);
+    const headlineEl = document.createElement('p');
+    headlineEl.className = 'kilon-insight';
+    headlineEl.textContent = feedback.headline;
+    resultEl.appendChild(headlineEl);
+
+    if (feedback.depth) {
+      const depthEl = document.createElement('p');
+      depthEl.className = 'kilon-depth';
+      depthEl.textContent = feedback.depth;
+      depthEl.style.display = 'none';
+
+      const toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'kilon-expand-btn';
+      toggleBtn.textContent = 'עוד פרטים ▾';
+      toggleBtn.addEventListener('click', () => {
+        const isOpen = depthEl.style.display !== 'none';
+        depthEl.style.display = isOpen ? 'none' : 'block';
+        toggleBtn.textContent = isOpen ? 'עוד פרטים ▾' : 'הסתר ▴';
+      });
+
+      resultEl.appendChild(toggleBtn);
+      resultEl.appendChild(depthEl);
+    }
 
     if (feedback.originalSentence) {
       const origEl = document.createElement('p');

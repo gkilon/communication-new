@@ -115,10 +115,10 @@ async function checkEmailStyle(draftText, writerScores, recipientScores, recipie
   } catch (e) {
     throw new Error("המודל החזיר תשובה שלא בפורמט הצפוי. נסה/י שוב.");
   }
-  if (!parsed.insight || !Array.isArray(parsed.alternatives)) {
+  if (!parsed.headline || !Array.isArray(parsed.alternatives)) {
     throw new Error("תשובת המודל חסרה שדות נדרשים. נסה/י שוב.");
   }
-  return parsed; // { insight, originalSentence, alternatives: [{label, text}] }
+  return parsed; // { headline, depth, originalSentence, alternatives: [{label, text}] }
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
