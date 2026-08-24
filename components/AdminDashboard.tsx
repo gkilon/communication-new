@@ -281,7 +281,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, orgId })
                             </div>
                             <button 
                                 onClick={() => {
-                                    const url = `${window.location.origin}/?team=${encodeURIComponent(team.name)}`;
+                                    const url = `${window.location.origin}/?org=${orgId}&team=${encodeURIComponent(team.name)}`;
                                     navigator.clipboard.writeText(url);
                                     alert(`הקישור לצוות "${team.name}" הועתק ללוח!`);
                                 }}
