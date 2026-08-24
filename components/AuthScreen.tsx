@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
-import { createUserProfile, getTeams, ensureGoogleUserProfile, createOrganization } from '../services/firebaseService';
+import { createUserProfile, getTeams, ensureGoogleUserProfile, createOrganization, getOrganization } from '../services/firebaseService';
 import { Team } from '../types';
 import { ArrowLeftIcon, GoogleIcon } from './icons/Icons';
 
@@ -26,6 +26,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess, onBack }
   const [isTeamLocked, setIsTeamLocked] = useState(false);
 
   const [inviteOrgId, setInviteOrgId] = useState<string | null>(null);
+  const [inviteOrgName, setInviteOrgName] = useState<string | null>(null);
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,6 +38,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess, onBack }
 
     if (orgParam) {
       setInviteOrgId(orgParam);
+      getOrganization(orgParam).then(org => {
+        if (org) setInviteOrgName(org.name);
+      }).catch(e => console.error("Failed to load org name", e));
       getTeams(orgParam).then(teamsData => {
         if (teamParam) {
           const foundTeam = teamsData.find(t => t.name.toLowerCase() === teamParam.toLowerCase());
@@ -140,9 +144,32 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess, onBack }
       <h2 className="text-3xl font-black text-cyan-300 mb-2">
         {isLogin ? 'כניסה' : (inviteOrgId ? 'הצטרפות לצוות' : 'יצירת חשבון וארגון חדש')}
       </h2>
-      <p className="text-gray-400 mb-8 font-medium">
+      <p className="text-gray-400 mb-4 font-medium">
         {isLogin ? 'ברוכים השבים! הכנסו לחשבון' : 'שלום! בוא נקים עבורך פרופיל'}
       </p>
+
+      {!isLogin && (
+        <div className={`mb-8 text-right p-4 rounded-2xl border-2 flex items-start gap-3 ${inviteOrgId ? 'bg-cyan-900/20 border-cyan-500/30' : 'bg-amber-900/20 border-amber-500/30'}`}>
+          <span className="text-2xl leading-none">{inviteOrgId ? '🔗' : '🆕'}</span>
+          <div>
+            {inviteOrgId ? (
+              <>
+                <p className="text-cyan-300 font-black text-sm">
+                  מצטרף/ת לארגון{inviteOrgName ? `: ${inviteOrgName}` : ' קיים'}
+                </p>
+                <p className="text-gray-400 text-xs mt-1">תהיה/י חבר/ת צוות רגיל/ה. רק מנהל הארגון קובע הרשאות.</p>
+              </>
+            ) : (
+              <>
+                <p className="text-amber-300 font-black text-sm">פותח/ת ארגון חדש</p>
+                <p className="text-gray-400 text-xs mt-1">
+                  תהיה/י ה<b>מנהל/ת</b> של הארגון החדש. הצטרפת בטעות? יש לך קישור הזמנה מהארגון שלך? השתמש/י בו במקום להיכנס לכתובת הזו ישירות.
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {!isLogin && inviteOrgId && (
         <div className="mb-8 text-right bg-cyan-900/20 p-5 rounded-2xl border-2 border-cyan-500/30">
@@ -169,7 +196,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess, onBack }
                 className="w-full bg-gray-900 border border-cyan-500/50 rounded-xl py-4 px-4 text-white text-lg focus:ring-4 focus:ring-cyan-500/20 shadow-inner"
                 placeholder="לדוגמה: Kilon Consulting"
             />
-            <p className="text-gray-500 text-xs mt-2">אתה תהיה מנהל הארגון החדש. יש לך קישור הזמנה? השתמש בו במקום.</p>
+            <p className="text-gray-500 text-xs mt-2">זה מה שיופיע לחברי הצוות שלך כשיצטרפו.</p>
         </div>
       )}
 
