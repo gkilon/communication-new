@@ -305,6 +305,24 @@ if (groqModel === "deepseek-r1-distill-llama-70b") {
       config: payload.config
     });
 
+    // Metadata-only usage log for the future weekly personal-learning summary.
+    // Deliberately does NOT store the email text itself (draft or suggestion) — only
+    // which color pairing this check involved. Never blocks or fails the main response.
+    if (payload.logEvent && authCheck.ok) {
+      try {
+        const db = getFirestore(getAdminApp());
+        await db.collection("users").doc(authCheck.uid).collection("checkEvents").add({
+          timestamp: new Date().toISOString(),
+          orgId: authCheck.orgId,
+          writerColor: payload.logEvent.writerColor || null,
+          recipientColor: payload.logEvent.recipientColor || null,
+          source: payload.logEvent.source || "unknown"
+        });
+      } catch (logErr) {
+        console.error("checkEvent logging failed (non-fatal):", logErr);
+      }
+    }
+
     return new Response(JSON.stringify({ text: response.text }), {
       headers: { "Content-Type": "application/json" }
     });

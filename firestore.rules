@@ -46,6 +46,14 @@ service cloud.firestore {
         || isAdminOfOrg(resource.data.orgId)
       );
       allow delete: if isAdminOfOrg(resource.data.orgId);
+
+      // Personal usage log for the weekly self-learning summary (metadata only — no
+      // email text). Only the person themself can read it, and only the server (via
+      // Admin SDK in gemini.ts) writes it — never the client directly.
+      match /checkEvents/{eventId} {
+        allow read: if isSignedIn() && request.auth.uid == uid;
+        allow write: if false;
+      }
     }
 
     // --- teams/{teamId} ---

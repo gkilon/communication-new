@@ -129,46 +129,44 @@ export const EmailStyleCheck: React.FC<EmailStyleCheckProps> = ({ writerScores }
       </div>
 
       {feedback && (
-        <div className="bg-gray-800 rounded-2xl border border-cyan-500/30 p-6 space-y-4">
-          <div>
-            <p className="text-cyan-300 font-bold mb-1">{feedback.headline}</p>
-            {feedback.depth && (
-              <>
+        <div className="bg-gray-800 rounded-2xl border border-cyan-500/30 p-6 space-y-3">
+          {!feedback.suggestion ? (
+            <p className="text-cyan-300 font-bold">{feedback.why || 'הטיוטה נראית טובה כמו שהיא.'}</p>
+          ) : (
+            <>
+              {feedback.originalSentence && (
+                <div className="flex items-start gap-2 text-sm text-gray-400">
+                  <span className="whitespace-nowrap">כתבת:</span>
+                  <span>"{feedback.originalSentence}"</span>
+                </div>
+              )}
+              <div className="flex items-center gap-3 bg-gray-900 rounded-xl p-3">
+                <span className="text-cyan-300 font-bold text-sm whitespace-nowrap">עדיף:</span>
+                <span className="flex-1 text-gray-200 text-sm">{feedback.suggestion}</span>
                 <button
-                  onClick={() => setShowDepth(!showDepth)}
-                  className="text-xs text-gray-400 hover:text-gray-200 underline"
-                >
-                  {showDepth ? 'הסתר ▴' : 'עוד פרטים ▾'}
-                </button>
-                {showDepth && (
-                  <p className="text-sm text-gray-300 leading-relaxed bg-gray-900 rounded-lg p-3 mt-2">
-                    {feedback.depth}
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-
-          {feedback.originalSentence && (
-            <p className="text-gray-500 text-sm italic">במקום: "{feedback.originalSentence}"</p>
-          )}
-
-          <div className="space-y-2">
-            {feedback.alternatives.map((alt, idx) => (
-              <div key={idx} className="flex items-center gap-3 bg-gray-900 rounded-xl p-3">
-                <span className="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full whitespace-nowrap">
-                  {alt.label}
-                </span>
-                <span className="flex-1 text-gray-200 text-sm">{alt.text}</span>
-                <button
-                  onClick={() => handleCopy(alt.text, idx)}
+                  onClick={() => handleCopy(feedback.suggestion!, 0)}
                   className="text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg whitespace-nowrap"
                 >
-                  {copiedIndex === idx ? 'הועתק! ✓' : 'העתק'}
+                  {copiedIndex === 0 ? 'הועתק! ✓' : 'העתק'}
                 </button>
               </div>
-            ))}
-          </div>
+              {feedback.why && (
+                <div>
+                  <button
+                    onClick={() => setShowDepth(!showDepth)}
+                    className="text-xs text-gray-400 hover:text-gray-200 underline"
+                  >
+                    {showDepth ? 'הסתר' : 'למה?'}
+                  </button>
+                  {showDepth && (
+                    <span className="mr-2 text-xs text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded-full">
+                      {feedback.why}
+                    </span>
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
     </div>

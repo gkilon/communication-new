@@ -73,6 +73,20 @@ function getColorsFromScores(scores: Scores) {
 /**
  * Builds a detailed color profile string for use in prompts.
  */
+function getDominantColorName(scores: Scores): string {
+  const sA = Number(scores?.a || 0);
+  const sB = Number(scores?.b || 0);
+  const sC = Number(scores?.c || 0);
+  const sD = Number(scores?.d || 0);
+  const colors = [
+    { n: 'אדום', v: sA + sC },
+    { n: 'צהוב', v: sA + sD },
+    { n: 'ירוק', v: sB + sD },
+    { n: 'כחול', v: sB + sC }
+  ].sort((a, b) => b.v - a.v);
+  return colors[0].n;
+}
+
 function buildColorProfile(scores: Scores): string {
   const sA = Number(scores?.a || 0);
   const sB = Number(scores?.b || 0);
@@ -218,16 +232,10 @@ ${COLOR_TRAITS}
   }, onChunk);
 };
 
-export interface EmailFeedbackAlternative {
-  label: string;
-  text: string;
-}
-
 export interface EmailFeedbackResult {
-  headline: string;
-  depth?: string;
   originalSentence?: string;
-  alternatives: EmailFeedbackAlternative[];
+  suggestion?: string;
+  why: string;
 }
 
 export const getEmailStyleFeedback = async (
@@ -241,7 +249,7 @@ export const getEmailStyleFeedback = async (
     ? `\nפרופיל התקשורת של הנמען (${recipientName || 'הנמען'}):\n${buildColorProfile(recipientScores)}`
     : `\nפרופיל התקשורת של הנמען אינו ידוע — תן משוב כללי המבוסס רק על סגנון הכותב.`;
 
-  const systemInstruction = `אתה יועץ תקשורת בכיר מבית Kilon Consulting. אתה נותן משוב חד וממוקד על טיוטת מייל — לא רך ומגובב, אלא ישיר ומדויק, כמו שיועץ טוב אומר את האמת בלי לרכך יותר מדי.
+  const systemInstruction = `אתה יועץ תקשורת בכיר מבית Kilon Consulting. אתה נותן תיקון ניסוח אחד, מיידי וברור — לא הרצאה, לא כמה אפשרויות לבחור ביניהן. המשתמש צריך לקרוא את זה תוך שנייה ולדעת בדיוק מה לעשות.
 
 פרופיל התקשורת של הכותב/ת:
 ${writerProfile}
@@ -249,17 +257,16 @@ ${recipientProfile}
 
 ${COLOR_TRAITS}
 
-המשימה שלך — לייצר תשובה שעובדת בשתי רמות בו-זמנית:
-1. **headline**: משפט אחד קצר וחד, כמו כותרת. זה מה שרואים קודם — חייב להיות ממש ממוקד, לא כללי, קורא לצבע הדומיננטי בשמו במפורש ("בתור [צבע] דומיננטי/ת..." או דומה).
-2. **depth**: 2-3 משפטים שמרחיבים את ה-headline — ההסבר האמיתי, למה זה קורה, מה המנגנון הפסיכולוגי, איך זה בא לידי ביטוי בדיוק במשפט הזה בטיוטה. זה נחשף רק אם המשתמש בוחר "עוד פרטים", אז אפשר וצריך שיהיה בעל תוכן אמיתי ולא לחזור על ה-headline במילים אחרות.
-3. זהה משפט או ביטוי אחד בטיוטה שהוא נקודת החיכוך/ההזדמנות הכי משמעותית — עליו מבוססים headline ו-depth.
-4. כתוב 3 ניסוחים חלופיים קצרים למשפט/לביטוי הזה בלבד (לא לכל המייל) — חלופות קצרות שממש אפשר להדביק במקום המקורי. תן לכל חלופה תווית קצרה שמתארת את הכיוון שלה, מותאמת לפרופיל הספציפי.
+המשימה שלך:
+1. זהה את המשפט/הביטוי האחד הכי בעייתי בטיוטה (verbatim, בדיוק כפי שנכתב).
+2. כתוב ניסוח חלופי אחד — הטוב ביותר, לא כמה אפשרויות. קצר, מוכן להדבקה ישירה במקום המקורי.
+3. כתוב "why" קצרצר — לא משפט, רק תג של 2-5 מילים שמסביר את העיקרון (למשל: "דנה תכליתית, לא אישית" או "אורי צריך פרטים, לא רק מסקנה"). זה נחשף רק אם המשתמש מבקש "למה", אז חייב להישאר קצר מאוד.
 
-אל תהיה זהיר מדי או מרוכך בשום שלב — תגיד את הדבר החד שבאמת עוזר, לא ניסוח דיפלומטי-סתמי שמתאים לכל אחד.
+אם הטיוטה כבר טובה ואין נקודת חיכוך משמעותית — originalSentence ריק, suggestion ריק, ו-why יכול לומר בקצרה מה עובד טוב.
 
 חשוב מאוד על הפורמט: החזר אך ורק אובייקט JSON תקין, בדיוק במבנה הבא, ללא שום טקסט נוסף לפניו או אחריו, וללא code fences של Markdown:
 
-{"headline": "משפט חד אחד, עם שם הצבע הדומיננטי מוזכר במפורש", "depth": "2-3 משפטים עם הסבר אמיתי ומעמיק, לא חזרה על ה-headline", "originalSentence": "המשפט/הביטוי המדויק מתוך הטיוטה (verbatim, אם אין ביטוי בעייתי ברור השאר ריק)", "alternatives": [{"label": "תווית קצרה", "text": "ניסוח חלופי קצר"}, {"label": "תווית קצרה", "text": "ניסוח חלופי קצר"}, {"label": "תווית קצרה", "text": "ניסוח חלופי קצר"}]}
+{"originalSentence": "המשפט המדויק מהטיוטה, verbatim, או ריק אם אין בעיה", "suggestion": "הניסוח החלופי היחיד, מוכן להדבקה, או ריק אם אין בעיה", "why": "תג קצרצר של 2-5 מילים"}
 
 כל הטקסט בעברית.`;
 
@@ -272,12 +279,18 @@ ${COLOR_TRAITS}
       thinkingConfig: { thinkingLevel: "low" },
       responseMimeType: "application/json",
       safetySettings: SAFETY_SETTINGS
+    },
+    // Metadata-only usage log for the future weekly summary — no email text stored.
+    logEvent: {
+      writerColor: getDominantColorName(writerScores),
+      recipientColor: recipientScores ? getDominantColorName(recipientScores) : null,
+      source: "web"
     }
   });
 
   const data = await response.json();
   const parsed = JSON.parse(data.text);
-  if (!parsed.headline || !Array.isArray(parsed.alternatives)) {
+  if (typeof parsed.suggestion !== 'string' || typeof parsed.why !== 'string') {
     throw new Error("תשובת המודל חסרה שדות נדרשים");
   }
   return parsed;

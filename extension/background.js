@@ -78,6 +78,8 @@ async function checkEmailStyle(draftText, writerScores, recipientScores, recipie
   if (!writerScores) throw new Error("לא נמצא פרופיל תקשורת — יש להשלים קודם את השאלון באתר.");
 
   const systemInstruction = buildEmailFeedbackPrompt(writerScores, recipientScores || null, recipientName);
+  const writerColor = getDominantColorName(writerScores);
+  const recipientColor = recipientScores ? getDominantColorName(recipientScores) : null;
 
   const res = await fetch(`${CONFIG.SITE_URL}/api/gemini`, {
     method: "POST",
@@ -101,7 +103,10 @@ async function checkEmailStyle(draftText, writerScores, recipientScores, recipie
             { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
             { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
           ]
-        }
+        },
+        // Metadata-only usage log for the future weekly summary — no email text is stored,
+        // just which color pairing this check involved. See netlify/functions/gemini.ts.
+        logEvent: { writerColor, recipientColor, source: "extension" }
       }
     })
   });
@@ -115,10 +120,10 @@ async function checkEmailStyle(draftText, writerScores, recipientScores, recipie
   } catch (e) {
     throw new Error("המודל החזיר תשובה שלא בפורמט הצפוי. נסה/י שוב.");
   }
-  if (!parsed.headline || !Array.isArray(parsed.alternatives)) {
+  if (typeof parsed.suggestion !== 'string' || typeof parsed.why !== 'string') {
     throw new Error("תשובת המודל חסרה שדות נדרשים. נסה/י שוב.");
   }
-  return parsed; // { headline, depth, originalSentence, alternatives: [{label, text}] }
+  return parsed; // { originalSentence, suggestion, why }
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

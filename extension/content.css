@@ -109,66 +109,66 @@
 .kilon-insight {
   font-weight: bold;
   color: #67e8f9;
-  margin-bottom: 6px;
   font-size: 13px;
 }
 
-.kilon-expand-btn {
+.kilon-swap-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.kilon-swap-orig {
+  color: #9ca3af;
+}
+
+.kilon-swap-suggestion {
+  align-items: center;
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.kilon-swap-label {
+  white-space: nowrap;
+  color: #9ca3af;
+}
+
+.kilon-swap-label-accent {
+  color: #67e8f9;
+  font-weight: bold;
+}
+
+.kilon-swap-text {
+  flex: 1;
+  color: #f3f4f6;
+}
+
+.kilon-why-btn {
   background: none;
   border: none;
   color: #9ca3af;
   font-size: 11px;
   cursor: pointer;
   padding: 0;
-  margin-bottom: 8px;
   text-decoration: underline;
+  margin-top: 4px;
 }
 
-.kilon-expand-btn:hover {
+.kilon-why-btn:hover {
   color: #d1d5db;
 }
 
-.kilon-depth {
-  font-size: 12px;
-  color: #d1d5db;
-  line-height: 1.6;
-  margin-bottom: 10px;
-  background: #1a2332;
-  padding: 8px 10px;
-  border-radius: 8px;
-}
-
-.kilon-original {
-  font-size: 12px;
-  color: #9ca3af;
-  font-style: italic;
-  margin-bottom: 12px;
-}
-
-.kilon-alt-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #1f2937;
-  border-radius: 8px;
-  padding: 8px 10px;
-  margin-bottom: 8px;
-}
-
-.kilon-alt-label {
+.kilon-why-tag {
+  display: inline-block;
   font-size: 11px;
-  font-weight: bold;
   color: #67e8f9;
   background: rgba(103, 232, 249, 0.1);
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 999px;
-  white-space: nowrap;
-}
-
-.kilon-alt-text {
-  flex: 1;
-  font-size: 13px;
-  color: #f3f4f6;
+  margin-right: 6px;
 }
 
 .kilon-copy-btn {

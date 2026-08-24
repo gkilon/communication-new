@@ -134,66 +134,68 @@
   function renderFeedback(resultEl, feedback) {
     resultEl.innerHTML = '';
 
-    const headlineEl = document.createElement('p');
-    headlineEl.className = 'kilon-insight';
-    headlineEl.textContent = feedback.headline;
-    resultEl.appendChild(headlineEl);
-
-    if (feedback.depth) {
-      const depthEl = document.createElement('p');
-      depthEl.className = 'kilon-depth';
-      depthEl.textContent = feedback.depth;
-      depthEl.style.display = 'none';
-
-      const toggleBtn = document.createElement('button');
-      toggleBtn.type = 'button';
-      toggleBtn.className = 'kilon-expand-btn';
-      toggleBtn.textContent = 'עוד פרטים ▾';
-      toggleBtn.addEventListener('click', () => {
-        const isOpen = depthEl.style.display !== 'none';
-        depthEl.style.display = isOpen ? 'none' : 'block';
-        toggleBtn.textContent = isOpen ? 'עוד פרטים ▾' : 'הסתר ▴';
-      });
-
-      resultEl.appendChild(toggleBtn);
-      resultEl.appendChild(depthEl);
+    if (!feedback.suggestion) {
+      const okEl = document.createElement('p');
+      okEl.className = 'kilon-insight';
+      okEl.textContent = feedback.why || 'הטיוטה נראית טובה כמו שהיא.';
+      resultEl.appendChild(okEl);
+      return;
     }
 
     if (feedback.originalSentence) {
-      const origEl = document.createElement('p');
-      origEl.className = 'kilon-original';
-      origEl.textContent = `במקום: "${feedback.originalSentence}"`;
-      resultEl.appendChild(origEl);
+      const origRow = document.createElement('div');
+      origRow.className = 'kilon-swap-row kilon-swap-orig';
+      origRow.innerHTML = `<span class="kilon-swap-label">כתבת:</span><span class="kilon-swap-text">"${feedback.originalSentence}"</span>`;
+      resultEl.appendChild(origRow);
     }
 
-    (feedback.alternatives || []).forEach(alt => {
-      const row = document.createElement('div');
-      row.className = 'kilon-alt-row';
+    const sugRow = document.createElement('div');
+    sugRow.className = 'kilon-swap-row kilon-swap-suggestion';
 
-      const labelEl = document.createElement('span');
-      labelEl.className = 'kilon-alt-label';
-      labelEl.textContent = alt.label;
+    const label = document.createElement('span');
+    label.className = 'kilon-swap-label kilon-swap-label-accent';
+    label.textContent = 'עדיף:';
 
-      const textEl = document.createElement('span');
-      textEl.className = 'kilon-alt-text';
-      textEl.textContent = alt.text;
+    const text = document.createElement('span');
+    text.className = 'kilon-swap-text';
+    text.textContent = feedback.suggestion;
 
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'kilon-copy-btn';
-      copyBtn.type = 'button';
-      copyBtn.textContent = 'העתק';
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(alt.text).then(() => {
-          copyBtn.textContent = 'הועתק! ✓';
-          setTimeout(() => { copyBtn.textContent = 'העתק'; }, 1500);
-        });
+    const copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'kilon-copy-btn';
+    copyBtn.textContent = 'העתק';
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(feedback.suggestion).then(() => {
+        copyBtn.textContent = 'הועתק! ✓';
+        setTimeout(() => { copyBtn.textContent = 'העתק'; }, 1500);
+      });
+    });
+
+    sugRow.appendChild(label);
+    sugRow.appendChild(text);
+    sugRow.appendChild(copyBtn);
+    resultEl.appendChild(sugRow);
+
+    if (feedback.why) {
+      const whyBtn = document.createElement('button');
+      whyBtn.type = 'button';
+      whyBtn.className = 'kilon-why-btn';
+      whyBtn.textContent = 'למה?';
+
+      const whyTag = document.createElement('span');
+      whyTag.className = 'kilon-why-tag';
+      whyTag.textContent = feedback.why;
+      whyTag.style.display = 'none';
+
+      whyBtn.addEventListener('click', () => {
+        const isOpen = whyTag.style.display !== 'none';
+        whyTag.style.display = isOpen ? 'none' : 'inline-block';
+        whyBtn.textContent = isOpen ? 'למה?' : 'הסתר';
       });
 
-      row.appendChild(labelEl);
-      row.appendChild(textEl);
-      row.appendChild(copyBtn);
-      resultEl.appendChild(row);
-    });
+      resultEl.appendChild(whyBtn);
+      resultEl.appendChild(whyTag);
+    }
   }
 
   // Gmail is a single-page app that mounts compose windows dynamically —
