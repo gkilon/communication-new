@@ -134,7 +134,7 @@
   function renderFeedback(resultEl, feedback) {
     resultEl.innerHTML = '';
 
-    if (!feedback.suggestion) {
+    if (!feedback.edits || feedback.edits.length === 0) {
       const okEl = document.createElement('p');
       okEl.className = 'kilon-insight';
       okEl.textContent = feedback.why || 'הטיוטה נראית טובה כמו שהיא.';
@@ -142,39 +142,48 @@
       return;
     }
 
-    if (feedback.originalSentence) {
-      const origRow = document.createElement('div');
-      origRow.className = 'kilon-swap-row kilon-swap-orig';
-      origRow.innerHTML = `<span class="kilon-swap-label">כתבת:</span><span class="kilon-swap-text">"${feedback.originalSentence}"</span>`;
-      resultEl.appendChild(origRow);
-    }
+    feedback.edits.forEach((edit, idx) => {
+      if (edit.original) {
+        const origRow = document.createElement('div');
+        origRow.className = 'kilon-swap-row kilon-swap-orig';
+        origRow.innerHTML = `<span class="kilon-swap-label">כתבת:</span><span class="kilon-swap-text"></span>`;
+        origRow.querySelector('.kilon-swap-text').textContent = `"${edit.original}"`;
+        resultEl.appendChild(origRow);
+      }
 
-    const sugRow = document.createElement('div');
-    sugRow.className = 'kilon-swap-row kilon-swap-suggestion';
+      const sugRow = document.createElement('div');
+      sugRow.className = 'kilon-swap-row kilon-swap-suggestion';
 
-    const label = document.createElement('span');
-    label.className = 'kilon-swap-label kilon-swap-label-accent';
-    label.textContent = 'עדיף:';
+      const label = document.createElement('span');
+      label.className = 'kilon-swap-label kilon-swap-label-accent';
+      label.textContent = 'עדיף:';
 
-    const text = document.createElement('span');
-    text.className = 'kilon-swap-text';
-    text.textContent = feedback.suggestion;
+      const text = document.createElement('span');
+      text.className = 'kilon-swap-text';
+      text.textContent = edit.suggestion;
 
-    const copyBtn = document.createElement('button');
-    copyBtn.type = 'button';
-    copyBtn.className = 'kilon-copy-btn';
-    copyBtn.textContent = 'העתק';
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(feedback.suggestion).then(() => {
-        copyBtn.textContent = 'הועתק! ✓';
-        setTimeout(() => { copyBtn.textContent = 'העתק'; }, 1500);
+      const copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'kilon-copy-btn';
+      copyBtn.textContent = 'העתק';
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(edit.suggestion).then(() => {
+          copyBtn.textContent = 'הועתק! ✓';
+          setTimeout(() => { copyBtn.textContent = 'העתק'; }, 1500);
+        });
       });
-    });
 
-    sugRow.appendChild(label);
-    sugRow.appendChild(text);
-    sugRow.appendChild(copyBtn);
-    resultEl.appendChild(sugRow);
+      sugRow.appendChild(label);
+      sugRow.appendChild(text);
+      sugRow.appendChild(copyBtn);
+      resultEl.appendChild(sugRow);
+
+      if (idx < feedback.edits.length - 1) {
+        const divider = document.createElement('div');
+        divider.className = 'kilon-edit-divider';
+        resultEl.appendChild(divider);
+      }
+    });
 
     if (feedback.why) {
       const whyBtn = document.createElement('button');

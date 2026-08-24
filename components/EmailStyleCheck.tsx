@@ -130,26 +130,30 @@ export const EmailStyleCheck: React.FC<EmailStyleCheckProps> = ({ writerScores }
 
       {feedback && (
         <div className="bg-gray-800 rounded-2xl border border-cyan-500/30 p-6 space-y-3">
-          {!feedback.suggestion ? (
+          {feedback.edits.length === 0 ? (
             <p className="text-cyan-300 font-bold">{feedback.why || 'הטיוטה נראית טובה כמו שהיא.'}</p>
           ) : (
             <>
-              {feedback.originalSentence && (
-                <div className="flex items-start gap-2 text-sm text-gray-400">
-                  <span className="whitespace-nowrap">כתבת:</span>
-                  <span>"{feedback.originalSentence}"</span>
+              {feedback.edits.map((edit, idx) => (
+                <div key={idx} className={idx > 0 ? "pt-3 border-t border-gray-700 space-y-2" : "space-y-2"}>
+                  {edit.original && (
+                    <div className="flex items-start gap-2 text-sm text-gray-400">
+                      <span className="whitespace-nowrap">כתבת:</span>
+                      <span>"{edit.original}"</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-3 bg-gray-900 rounded-xl p-3">
+                    <span className="text-cyan-300 font-bold text-sm whitespace-nowrap">עדיף:</span>
+                    <span className="flex-1 text-gray-200 text-sm">{edit.suggestion}</span>
+                    <button
+                      onClick={() => handleCopy(edit.suggestion, idx)}
+                      className="text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg whitespace-nowrap"
+                    >
+                      {copiedIndex === idx ? 'הועתק! ✓' : 'העתק'}
+                    </button>
+                  </div>
                 </div>
-              )}
-              <div className="flex items-center gap-3 bg-gray-900 rounded-xl p-3">
-                <span className="text-cyan-300 font-bold text-sm whitespace-nowrap">עדיף:</span>
-                <span className="flex-1 text-gray-200 text-sm">{feedback.suggestion}</span>
-                <button
-                  onClick={() => handleCopy(feedback.suggestion!, 0)}
-                  className="text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg whitespace-nowrap"
-                >
-                  {copiedIndex === 0 ? 'הועתק! ✓' : 'העתק'}
-                </button>
-              </div>
+              ))}
               {feedback.why && (
                 <div>
                   <button

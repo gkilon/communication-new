@@ -146,6 +146,12 @@
   color: #f3f4f6;
 }
 
+.kilon-edit-divider {
+  height: 1px;
+  background: #374151;
+  margin: 8px 0;
+}
+
 .kilon-why-btn {
   background: none;
   border: none;

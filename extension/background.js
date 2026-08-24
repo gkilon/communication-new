@@ -120,10 +120,10 @@ async function checkEmailStyle(draftText, writerScores, recipientScores, recipie
   } catch (e) {
     throw new Error("המודל החזיר תשובה שלא בפורמט הצפוי. נסה/י שוב.");
   }
-  if (typeof parsed.suggestion !== 'string' || typeof parsed.why !== 'string') {
+  if (!Array.isArray(parsed.edits) || typeof parsed.why !== 'string') {
     throw new Error("תשובת המודל חסרה שדות נדרשים. נסה/י שוב.");
   }
-  return parsed; // { originalSentence, suggestion, why }
+  return parsed; // { edits: [{original, suggestion}], why }
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
