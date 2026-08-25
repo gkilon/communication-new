@@ -22,7 +22,7 @@
       e.preventDefault();
       e.stopPropagation();
       activeComposeBox = composeBox;
-      openPanel();
+      openPanel(btn);
     });
 
     // Insert the button right above the compose box
@@ -55,7 +55,7 @@
     document.body.appendChild(panel);
 
     panel.querySelector('.kilon-close-btn').addEventListener('click', () => {
-      panel.classList.remove('kilon-panel-open');
+      closePanel();
     });
 
     panel.querySelector('.kilon-run-btn').addEventListener('click', runCheck);
@@ -63,11 +63,64 @@
     return panel;
   }
 
-  function openPanel() {
+  function positionPanel(triggerBtn) {
+    const rect = triggerBtn.getBoundingClientRect();
+    const panelWidth = 340;
+    const margin = 12;
+    const tailSize = 14;
+
+    panel.style.width = panelWidth + 'px';
+
+    let left = rect.left + rect.width / 2 - panelWidth / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - panelWidth - margin));
+    panel.style.left = left + 'px';
+
+    // Grow upward from the button if there's room above (Gmail compose windows usually
+    // sit low on screen), otherwise grow downward.
+    const spaceAbove = rect.top;
+    const growUp = spaceAbove > 320;
+
+    if (growUp) {
+      panel.style.bottom = (window.innerHeight - rect.top + margin) + 'px';
+      panel.style.top = 'auto';
+      panel.setAttribute('data-pos', 'above');
+    } else {
+      panel.style.top = (rect.bottom + margin) + 'px';
+      panel.style.bottom = 'auto';
+      panel.setAttribute('data-pos', 'below');
+    }
+
+    // Anchor the scale animation and the speech-bubble tail to the button's actual
+    // horizontal position, so the card visibly grows out of the button that was clicked.
+    const tailX = Math.max(20, Math.min(rect.left + rect.width / 2 - left, panelWidth - 20));
+    panel.style.transformOrigin = `${tailX}px ${growUp ? 'bottom' : 'top'}`;
+    panel.style.setProperty('--kilon-tail-x', `${tailX - tailSize / 2}px`);
+  }
+
+  function openPanel(triggerBtn) {
     ensurePanel();
-    panel.classList.add('kilon-panel-open');
+    positionPanel(triggerBtn);
     panel.querySelector('.kilon-result').innerHTML = '';
     loadColleagues();
+
+    // display:none can't transition, so flip to block first, then add the open class
+    // on the next frame so the browser actually animates the scale/opacity change.
+    panel.style.display = 'block';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        panel.classList.add('kilon-panel-open');
+      });
+    });
+  }
+
+  function closePanel() {
+    if (!panel) return;
+    panel.classList.remove('kilon-panel-open');
+    setTimeout(() => {
+      if (panel && !panel.classList.contains('kilon-panel-open')) {
+        panel.style.display = 'none';
+      }
+    }, 220);
   }
 
   function loadColleagues() {

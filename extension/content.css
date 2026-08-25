@@ -18,9 +18,7 @@
 
 .kilon-panel {
   position: fixed;
-  top: 80px;
-  left: 24px;
-  width: 340px;
+  /* top/bottom/left set dynamically in content.js to anchor near the clicked button */
   max-height: 70vh;
   overflow-y: auto;
   background: #111827;
@@ -31,10 +29,35 @@
   z-index: 999999;
   display: none;
   direction: rtl;
+  opacity: 0;
+  transform: scale(0.82) translateY(6px);
+  transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .kilon-panel.kilon-panel-open {
-  display: block;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Speech-bubble tail pointing back at the button that triggered the panel */
+.kilon-panel::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #111827;
+  transform: rotate(45deg);
+  left: var(--kilon-tail-x, 20px);
+}
+
+.kilon-panel[data-pos="above"]::after {
+  bottom: -6px;
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.15);
+}
+
+.kilon-panel[data-pos="below"]::after {
+  top: -6px;
+  box-shadow: -3px -3px 6px rgba(0,0,0,0.1);
 }
 
 .kilon-panel-header {
