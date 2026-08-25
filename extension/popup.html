@@ -3,19 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { width: 280px; font-family: Arial, sans-serif; background: #111827; color: #fff; padding: 16px; margin: 0; }
-    h2 { font-size: 16px; margin: 0 0 12px; }
-    input { width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 8px; border-radius: 6px; border: 1px solid #374151; background: #1f2937; color: #fff; }
-    button { width: 100%; padding: 10px; border-radius: 6px; border: none; background: #0891b2; color: #fff; font-weight: bold; cursor: pointer; }
-    button:hover { background: #0e7490; }
+    body { width: 280px; font-family: 'Assistant', Arial, sans-serif; background: #F7F2E6; color: #1E1B16; padding: 16px; margin: 0; }
+    .wordmark { display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px; direction: ltr; }
+    .wordmark .thin { font-weight: 200; font-size: 15px; }
+    .wordmark .bold { font-weight: 800; font-size: 15px; }
+    .wordmark .dot { width: 6px; height: 6px; border-radius: 50%; background: #838B9E; margin-bottom: 2px; }
+    h2 { font-size: 16px; margin: 0 0 12px; color: #1E1B16; }
+    input { width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 8px; border-radius: 8px; border: 1px solid #E6DCC8; background: #FFFDF8; color: #1E1B16; }
+    button { width: 100%; padding: 10px; border-radius: 999px; border: none; background: linear-gradient(90deg, #838B9E, #BD5B36); color: #fff; font-weight: 700; cursor: pointer; }
+    button:hover { opacity: 0.9; }
     #status { font-size: 12px; margin-top: 8px; text-align: center; }
-    .error { color: #f87171; }
-    .success { color: #34d399; }
+    .error { color: #B91C1C; }
+    .success { color: #15803D; }
     #logged-in { display: none; text-align: center; }
     #logged-in p { font-size: 13px; margin-bottom: 10px; }
   </style>
 </head>
 <body>
+  <div class="wordmark">
+    <span class="thin">GILAD</span><span class="bold">KILON.</span><span class="dot"></span>
+  </div>
+
   <div id="login-form">
     <h2>התחברות</h2>
     <input type="email" id="email" placeholder="אימייל" />
@@ -26,7 +34,7 @@
 
   <div id="logged-in">
     <p>מחובר/ת כ-<span id="user-email"></span></p>
-    <p style="color:#9ca3af;">לך/י ל-Gmail ותראה/י כפתור בדיקת מייל ליד כל טיוטה.</p>
+    <p style="color:#6B6355;">לך/י ל-Gmail ותראה/י כפתור בדיקת מייל ליד כל טיוטה.</p>
     <button id="logout-btn">התנתק/י</button>
   </div>
 

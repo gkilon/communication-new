@@ -1,13 +1,17 @@
+/* Kilon Consulting brand palette (matches the web app's Tailwind tokens):
+   ivory background #F7F2E6, card #FFFDF8, ink #1E1B16, muted ink #6B6355,
+   border #E6DCC8, slate accent #838B9E, terracotta accent #BD5B36 */
+
 .kilon-check-btn {
   display: inline-block;
   margin: 4px 0;
-  padding: 6px 12px;
-  background: linear-gradient(90deg, #0891b2, #2563eb);
+  padding: 6px 14px;
+  background: linear-gradient(90deg, #838B9E, #BD5B36);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
   z-index: 9999;
 }
@@ -21,11 +25,12 @@
   /* top/bottom/left set dynamically in content.js to anchor near the clicked button */
   max-height: 70vh;
   overflow-y: auto;
-  background: #111827;
-  color: #f3f4f6;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-  font-family: Arial, sans-serif;
+  background: #FFFDF8;
+  color: #1E1B16;
+  border-radius: 14px;
+  border: 1px solid #E6DCC8;
+  box-shadow: 0 10px 40px rgba(30, 27, 22, 0.18);
+  font-family: 'Assistant', Arial, sans-serif;
   z-index: 999999;
   display: none;
   direction: rtl;
@@ -45,19 +50,23 @@
   position: absolute;
   width: 14px;
   height: 14px;
-  background: #111827;
+  background: #FFFDF8;
+  border-left: 1px solid #E6DCC8;
+  border-top: 1px solid #E6DCC8;
   transform: rotate(45deg);
   left: var(--kilon-tail-x, 20px);
 }
 
 .kilon-panel[data-pos="above"]::after {
-  bottom: -6px;
-  box-shadow: 3px 3px 6px rgba(0,0,0,0.15);
+  bottom: -8px;
+  border-left: none;
+  border-top: none;
+  border-right: 1px solid #E6DCC8;
+  border-bottom: 1px solid #E6DCC8;
 }
 
 .kilon-panel[data-pos="below"]::after {
-  top: -6px;
-  box-shadow: -3px -3px 6px rgba(0,0,0,0.1);
+  top: -8px;
 }
 
 .kilon-panel-header {
@@ -65,17 +74,23 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: #1f2937;
-  border-radius: 12px 12px 0 0;
-  font-weight: bold;
+  background: #F7F2E6;
+  border-radius: 14px 14px 0 0;
+  border-bottom: 1px solid #E6DCC8;
+  font-weight: 700;
+  color: #1E1B16;
 }
 
 .kilon-close-btn {
   background: none;
   border: none;
-  color: #9ca3af;
+  color: #6B6355;
   cursor: pointer;
   font-size: 16px;
+}
+
+.kilon-close-btn:hover {
+  color: #1E1B16;
 }
 
 .kilon-panel-body {
@@ -84,7 +99,7 @@
 
 .kilon-panel-body label {
   font-size: 12px;
-  color: #9ca3af;
+  color: #6B6355;
   display: block;
   margin-bottom: 6px;
 }
@@ -93,25 +108,25 @@
   width: 100%;
   padding: 8px;
   margin-bottom: 12px;
-  background: #1f2937;
-  color: #fff;
-  border: 1px solid #374151;
-  border-radius: 6px;
+  background: #F7F2E6;
+  color: #1E1B16;
+  border: 1px solid #E6DCC8;
+  border-radius: 8px;
 }
 
 .kilon-run-btn {
   width: 100%;
   padding: 10px;
-  background: #0891b2;
+  background: linear-gradient(90deg, #838B9E, #BD5B36);
   color: #fff;
   border: none;
-  border-radius: 6px;
-  font-weight: bold;
+  border-radius: 999px;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .kilon-run-btn:hover {
-  background: #0e7490;
+  opacity: 0.9;
 }
 
 .kilon-result {
@@ -122,16 +137,16 @@
 }
 
 .kilon-error {
-  color: #f87171;
+  color: #B91C1C;
 }
 
 .kilon-loading {
-  color: #9ca3af;
+  color: #6B6355;
 }
 
 .kilon-insight {
-  font-weight: bold;
-  color: #67e8f9;
+  font-weight: 700;
+  color: #9C4A2B;
   font-size: 13px;
 }
 
@@ -144,41 +159,42 @@
 }
 
 .kilon-swap-orig {
-  color: #9ca3af;
+  color: #6B6355;
 }
 
 .kilon-swap-suggestion {
   align-items: center;
-  background: #1f2937;
-  border-radius: 8px;
+  background: #F7F2E6;
+  border: 1px solid #E6DCC8;
+  border-radius: 10px;
   padding: 8px 10px;
 }
 
 .kilon-swap-label {
   white-space: nowrap;
-  color: #9ca3af;
+  color: #6B6355;
 }
 
 .kilon-swap-label-accent {
-  color: #67e8f9;
-  font-weight: bold;
+  color: #9C4A2B;
+  font-weight: 700;
 }
 
 .kilon-swap-text {
   flex: 1;
-  color: #f3f4f6;
+  color: #1E1B16;
 }
 
 .kilon-edit-divider {
   height: 1px;
-  background: #374151;
+  background: #E6DCC8;
   margin: 8px 0;
 }
 
 .kilon-why-btn {
   background: none;
   border: none;
-  color: #9ca3af;
+  color: #6B6355;
   font-size: 11px;
   cursor: pointer;
   padding: 0;
@@ -187,31 +203,31 @@
 }
 
 .kilon-why-btn:hover {
-  color: #d1d5db;
+  color: #1E1B16;
 }
 
 .kilon-why-tag {
   display: inline-block;
   font-size: 11px;
-  color: #67e8f9;
-  background: rgba(103, 232, 249, 0.1);
+  color: #9C4A2B;
+  background: rgba(189, 91, 54, 0.1);
   padding: 3px 8px;
   border-radius: 999px;
   margin-right: 6px;
 }
 
 .kilon-copy-btn {
-  background: #0891b2;
+  background: #838B9E;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 4px 10px;
+  border-radius: 999px;
+  padding: 4px 12px;
   font-size: 11px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .kilon-copy-btn:hover {
-  background: #0e7490;
+  background: #6D7488;
 }
