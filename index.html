@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="color-scheme" content="dark">
-    <meta name="theme-color" content="#0f172a">
-    <title>שאלון סגנונות תקשורת</title>
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#F7F2E7">
+    <title>Kilon Communication</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -19,6 +19,8 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" crossorigin="anonymous"></script>
     
     <script>
+      // Kilon Consulting brand palette — matched from kilon-consulting.com (warm ivory,
+      // near-black ink, muted blue-grey/lavender secondary, burnt terracotta primary accent).
       tailwind.config = {
         theme: {
           extend: {
@@ -26,27 +28,19 @@
               sans: ['Assistant', 'sans-serif'],
             },
             colors: {
-              neon: {
-                cyan: '#00f3ff',
-                magenta: '#bc13fe',
-                purple: '#8a2be2',
-                green: '#00ff66'
-              },
-              glass: {
-                dark: 'rgba(5, 5, 10, 0.85)',
-                light: 'rgba(255, 255, 255, 0.03)',
-                border: 'rgba(0, 243, 255, 0.2)'
+              kilon: {
+                bg: '#F7F2E6',        // warm ivory page background
+                card: '#FFFDF8',      // slightly lighter card surface
+                ink: '#1E1B16',       // near-black primary text
+                inkSoft: '#6B6355',   // muted secondary text
+                border: '#E6DCC8',    // warm hairline border
+                slate: '#838B9E',     // muted blue-grey / lavender secondary accent
+                terracotta: '#BD5B36',    // primary brand accent
+                terracottaDark: '#9C4A2B',
               }
             },
-            boxShadow: {
-              'neon-cyan': '0 0 15px rgba(0, 243, 255, 0.5), 0 0 30px rgba(0, 243, 255, 0.3)',
-              'neon-magenta': '0 0 15px rgba(188, 19, 254, 0.5), 0 0 30px rgba(188, 19, 254, 0.3)',
-              'neon-purple': '0 0 15px rgba(138, 43, 226, 0.5), 0 0 30px rgba(138, 43, 226, 0.3)',
-              'neon-green': '0 0 15px rgba(0, 255, 102, 0.5), 0 0 30px rgba(0, 255, 102, 0.3)',
-            },
             backgroundImage: {
-              'cyber-grid': 'linear-gradient(transparent 95%, rgba(0, 243, 255, 0.1) 100%), linear-gradient(90deg, transparent 95%, rgba(0, 243, 255, 0.1) 100%)',
-              'mesh-gradient': 'radial-gradient(at 20% 0%, rgba(138,43,226,0.3) 0, transparent 40%), radial-gradient(at 80% 100%, rgba(0,243,255,0.2) 0, transparent 40%), radial-gradient(at 0% 100%, rgba(188,19,254,0.15) 0, transparent 50%)',
+              'kilon-cta': 'linear-gradient(90deg, #838B9E 0%, #BD5B36 100%)',
             }
           }
         }
@@ -55,18 +49,18 @@
     
     <style>
       :root {
-        color-scheme: dark !important;
-        --background-color: #030305;
+        color-scheme: light !important;
+        --background-color: #F7F2E6;
       }
       
       html {
-        background-color: #030305 !important;
-        color-scheme: dark !important;
+        background-color: #F7F2E6 !important;
+        color-scheme: light !important;
         forced-color-adjust: none !important;
       }
 
       body {
-        background-color: #0f172a !important;
+        background-color: #F7F2E6 !important;
         forced-color-adjust: none !important;
         margin: 0;
         padding: 0;
@@ -85,6 +79,17 @@
       
       .animate-fade-in-up { animation: fade-in-up 0.5s ease-out forwards; }
       .text-shadow { text-shadow: 1px 1px 4px rgba(0, 0, 0, 1) !important; }
+
+      /* Thin "blueprint" line-art background motif — outlined circles, a rotated
+         diamond, and scattered dots, matching kilon-consulting.com's page texture. */
+      .kilon-blueprint-bg {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .kilon-blueprint-bg svg { position: absolute; opacity: 0.08; }
 
       .chart-quadrant {
          mix-blend-mode: normal !important;

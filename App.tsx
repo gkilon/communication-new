@@ -38,16 +38,16 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     // Correctly accessing state from the Component base class
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-6 text-center" dir="rtl">
-          <div className="bg-gray-800 p-8 rounded-2xl border-2 border-red-500 shadow-2xl max-w-md">
-              <h1 className="text-3xl font-bold text-red-500 mb-4">אופס! משהו השתבש</h1>
-              <p className="text-gray-300 mb-6">חלה שגיאה בטעינת האפליקציה.</p>
-              <pre className="bg-black/50 p-4 rounded text-xs text-red-300 overflow-auto mb-6 text-left" dir="ltr">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-kilon-bg text-kilon-ink p-6 text-center" dir="rtl">
+          <div className="bg-kilon-card p-8 rounded-2xl border-2 border-red-400 shadow-lg max-w-md">
+              <h1 className="text-3xl font-bold text-red-600 mb-4">אופס! משהו השתבש</h1>
+              <p className="text-kilon-inkSoft mb-6">חלה שגיאה בטעינת האפליקציה.</p>
+              <pre className="bg-kilon-bg p-4 rounded text-xs text-red-600 overflow-auto mb-6 text-left" dir="ltr">
                   {this.state.error?.message}
               </pre>
               <button 
                 onClick={() => window.location.reload()} 
-                className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-8 py-3 rounded-full transition-all"
+                className="bg-kilon-cta text-white font-bold px-8 py-3 rounded-full transition-all hover:opacity-90"
               >
                 נסה לטעון מחדש
               </button>
@@ -108,10 +108,10 @@ export const App: React.FC = () => {
 
   if (configError) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white p-6 text-center" dir="rtl">
-        <div className="bg-gray-800 p-8 rounded-2xl border-2 border-red-500 max-w-md">
-          <h1 className="text-2xl font-bold text-red-500 mb-4">האפליקציה לא מוגדרת</h1>
-          <p className="text-gray-300">חסרים משתני סביבה של Firebase (VITE_FIREBASE_*). אין מצב גישה ללא הגדרה תקינה בגרסה הזו.</p>
+      <div className="min-h-screen bg-kilon-bg flex items-center justify-center text-kilon-ink p-6 text-center" dir="rtl">
+        <div className="bg-kilon-card p-8 rounded-2xl border-2 border-red-400 max-w-md">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">האפליקציה לא מוגדרת</h1>
+          <p className="text-kilon-inkSoft">חסרים משתני סביבה של Firebase (VITE_FIREBASE_*). אין מצב גישה ללא הגדרה תקינה בגרסה הזו.</p>
         </div>
       </div>
     );
@@ -124,17 +124,17 @@ export const App: React.FC = () => {
        ) : view === 'simple' ? (
          <SimpleApp user={user} onLogout={handleSignOut} />
        ) : (
-         <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white" dir="rtl">
+         <div className="min-h-screen bg-kilon-bg flex items-center justify-center text-kilon-ink" dir="rtl">
            <div className="flex flex-col items-center gap-6">
               <div className="relative">
-                <div className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
+                <div className="w-16 h-16 border-4 border-kilon-slate/30 border-t-kilon-terracotta rounded-full animate-spin"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-8 h-8 bg-cyan-500 rounded-full animate-pulse opacity-50"></div>
+                    <div className="w-8 h-8 bg-kilon-terracotta rounded-full animate-pulse opacity-50"></div>
                 </div>
               </div>
               <div className="text-center">
-                <p className="text-xl font-bold text-cyan-400 animate-pulse mb-1">טוען מערכת...</p>
-                <p className="text-sm text-gray-500">אנחנו מכינים את הסביבה שלך</p>
+                <p className="text-xl font-bold text-kilon-ink animate-pulse mb-1">טוען מערכת...</p>
+                <p className="text-sm text-kilon-inkSoft">אנחנו מכינים את הסביבה שלך</p>
               </div>
            </div>
          </div>
